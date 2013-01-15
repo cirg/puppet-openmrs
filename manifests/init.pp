@@ -116,6 +116,10 @@ class openmrs{
     message=> "Step 9. Create openmrs-runtime.properties file in the .OpenMRS directory",
   }
   file {"/usr/share/tomcat6/.OpenMRS/openmrs-runtime.properties":
+    ensure => present,
+    owner => 'root',
+    group => 'tomcat6',
+    mode => '0660',
     content => '
 encryption.vector=kznZRqg+DbuOVWjhEl63cA==
 connection.url=jdbc:mysql://localhost:3306/openmrs?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8
