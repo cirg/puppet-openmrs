@@ -36,7 +36,9 @@ class openmrs{
   Notify["OpenMRS-10"] ->
 	File ["/opt/openmrs-backup-tools"] ->
   Notify["OpenMRS-11"] ->
-	Exec ['configure-backup-cron']
+	Exec ['configure-backup-cron'] ->
+  Notify["OpenMRS-12"] ->
+	Exec ['restart-tomcat']
 
   
   notify {"OpenMRS-1.0.0":
@@ -202,6 +204,14 @@ connection.password=temp_openmrs
   }
   exec { 'configure-backup-cron':
     command => '/opt/openmrs-backup-tools/setup.sh',
+    timeout => 5000,
+  }
+
+  notify {"OpenMRS-12":
+    message=> "Restart tomcat to workaround hot deployment probs",
+  }
+  exec { 'restart-tomcat':
+    command => '/etc/init.d/tomcat6 restart',
     timeout => 5000,
   }
 }
