@@ -40,9 +40,7 @@ class openmrs{
   Notify["OpenMRS-12"] ->
 	File ['/etc/udev/rules.d/50-kemr.rules']->
   Notify["OpenMRS-13"] ->
-	Exec ['reload-udev-rules']->
-  Notify["OpenMRS-14"] ->
-	Exec ['restart-tomcat']
+	Exec ['reload-udev-rules']
 
   
   notify {"OpenMRS-1.0.0":
@@ -96,6 +94,17 @@ class openmrs{
   database_grant{'openmrs@localhost':
     privileges => [all],
   }
+  database_user{ 'openmrs@10.0.2.16':
+    ensure        => present,
+    password_hash => mysql_password('temp_openmrs'),
+  }
+  database_grant{'openmrs@10.0.2.16':
+    privileges => [all],
+  }
+  class { 'mysql::config':
+     bind_address  => '10.0.2.17',     
+   }
+
   notify {"OpenMRS-4":
     message=> "Step 4. Create database openmrs",
   }
@@ -132,7 +141,7 @@ class openmrs{
   }
 
   notify {"OpenMRS-6":
-    message=> "Step 6. Run maven install to create distro.zip",
+    message=> "Step 6 Run maven install to create distro.zip",
   }
   exec{ "maven-install":
     cwd => '/usr/src/openmrs-module-kenyaemr',
@@ -182,7 +191,7 @@ class openmrs{
     mode => '0660',
     content => '
 encryption.vector=kznZRqg+DbuOVWjhEl63cA==
-connection.url=jdbc:mysql://localhost:3306/openmrs?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8
+connection.url=jdbc:mysql://10.0.2.17:3306/openmrs?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8
 module.allow_web_admin=true
 connection.username=openmrs
 auto_update_database=false
@@ -224,13 +233,5 @@ connection.password=temp_openmrs
   }
   exec { 'reload-udev-rules':
     command => '/sbin/udevadm control --reload-rules',
-  }
-
-  notify {"OpenMRS-14":
-    message=> "Restart tomcat to workaround hot deployment probs",
-  }
-  exec { 'restart-tomcat':
-    command => '/etc/init.d/tomcat6 restart',
-    timeout => 5000,
-  }
+  }  
 }
