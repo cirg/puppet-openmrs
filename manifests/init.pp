@@ -40,7 +40,9 @@ class openmrs{
   Notify["OpenMRS-12"] ->
 	File ['/etc/udev/rules.d/50-kemr.rules']->
   Notify["OpenMRS-13"] ->
-	Exec ['reload-udev-rules']
+	Exec ['reload-udev-rules']->
+  Notify["OpenMRS-14"] ->
+	Exec ['disable-mysql-startup']
 
   
   notify {"OpenMRS-1.0.0":
@@ -101,9 +103,6 @@ class openmrs{
   database_grant{'openmrs@10.0.2.16':
     privileges => [all],
   }
-  class { 'mysql::config':
-     bind_address  => '10.0.2.17',     
-   }
 
   notify {"OpenMRS-4":
     message=> "Step 4. Create database openmrs",
@@ -234,4 +233,12 @@ connection.password=temp_openmrs
   exec { 'reload-udev-rules':
     command => '/sbin/udevadm control --reload-rules',
   }  
+
+  notify {"OpenMRS-14":
+    message=> "Disable mysql from startup",
+  }
+  exec { 'disable-mysql-startup':
+    command => '/usr/sbin/update-rc.d mysql disable',
+    timeout => 5000,
+  }
 }
