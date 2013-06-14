@@ -1,6 +1,6 @@
 class openmrs{
   
-  exec { 'add-mysql-startup':
+  exec { 'disable-mysql-startup':
     command => '/usr/sbin/update-rc.d mysql enable',
     timeout => 5000,
   }
