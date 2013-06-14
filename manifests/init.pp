@@ -67,7 +67,7 @@ class openmrs{
   exec { 'download-openmrs':
     cwd     => '/usr/src',
     creates => '/usr/src/openmrs.war',
-    command => '/usr/bin/wget \'http://iweb.dl.sourceforge.net/project/openmrs/releases/OpenMRS_1.9.1/openmrs.war\'',
+    command => '/usr/bin/wget \'http://downloads.sourceforge.net/project/openmrs/releases/OpenMRS_1.9.3/openmrs.war\'',
     timeout => 5000,
   }
   
@@ -127,7 +127,7 @@ class openmrs{
   }
   exec{ 'openmrs-module-kenyaemr-git-checkout':
     cwd => '/usr/src/openmrs-module-kenyaemr',
-    command => "/usr/bin/git checkout 2013.1",
+    command => "/usr/bin/git checkout 2013.2",
     logoutput => 'true',
   }
 
@@ -146,14 +146,14 @@ class openmrs{
   }
   exec { "wget-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/wget \'https://www.dropbox.com/s/lnfvd9r7cblpawr/kenyaemr-concepts-2013.1.sql\'',
-    creates => '/usr/src/kenyaemr-concepts-2013.1.sql',
+    command => '/usr/bin/wget \'http://dl.dropboxusercontent.com/u/12136987/openmrs_concepts_1.9.3_20130604.sql\'',
+    creates => '/usr/src/openmrs_concepts_1.9.3_20130604.sql',
     timeout => 5000,
   }
 
   exec { "apply-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/mysql openmrs < kenyaemr-concepts-2013.1.sql',
+    command => '/usr/bin/mysql openmrs < openmrs_concepts_1.9.3_20130604.sql',
     timeout => 5000,	
   }
 
