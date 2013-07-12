@@ -127,7 +127,7 @@ class openmrs{
   }
   exec{ 'openmrs-module-kenyaemr-git-checkout':
     cwd => '/usr/src/openmrs-module-kenyaemr',
-    command => "/usr/bin/git checkout 2013.2",
+    command => "/usr/bin/git checkout 13.2",
     logoutput => 'true',
   }
 
@@ -146,14 +146,14 @@ class openmrs{
   }
   exec { "wget-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/wget \'http://dl.dropboxusercontent.com/u/12136987/openmrs_concepts_1.9.3_20130604.sql\'',
-    creates => '/usr/src/openmrs_concepts_1.9.3_20130604.sql',
+    command => '/usr/bin/wget -qO- \'https://dl.dropboxusercontent.com/u/12136987/kenyaemr-concepts-2013.2.sql.zip\' | funzip > /usr/src/openmrs-concepts-13.2.sql',
+    creates => '/usr/src/openmrs-concepts-13.2.sql',
     timeout => 5000,
   }
 
   exec { "apply-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/mysql openmrs < openmrs_concepts_1.9.3_20130604.sql',
+    command => '/usr/bin/mysql openmrs < /usr/src/openmrs-concepts-13.2.sql',
     timeout => 5000,	
   }
 
