@@ -127,7 +127,7 @@ class openmrs{
   }
   exec{ 'openmrs-module-kenyaemr-git-checkout':
     cwd => '/usr/src/openmrs-module-kenyaemr',
-    command => "/usr/bin/git checkout 13.2.1",
+    command => "/usr/bin/git checkout 13.2.2",
     logoutput => 'true',
   }
 
