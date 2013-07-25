@@ -27,22 +27,22 @@ class openmrs{
     Exec["maven-install"] ->
   Notify["OpenMRS-7"] ->
     Exec["wget-concept-dictionary"] ->
-    Exec["apply-concept-dictionary"] ->	
+    Exec["apply-concept-dictionary"] -> 
   Notify["OpenMRS-8"] ->
     Exec["remove-previous-kenyaemr-distros"] ->
     File ["/usr/share/tomcat6/.OpenMRS/modules"] ->
   Notify["OpenMRS-9"] ->
-	File ["/usr/share/tomcat6/.OpenMRS/openmrs-runtime.properties"]->
+    File ["/usr/share/tomcat6/.OpenMRS/openmrs-runtime.properties"]->
   Notify["OpenMRS-10"] ->
-	File ["/opt/openmrs-backup-tools"] ->
+    File ["/opt/openmrs-backup-tools"] ->
   Notify["OpenMRS-11"] ->
-	Exec ['configure-backup-cron']->
+    Exec ['configure-backup-cron']->
   Notify["OpenMRS-12"] ->
-	File ['/etc/udev/rules.d/50-kemr.rules']->
+    File ['/etc/udev/rules.d/50-kemr.rules']->
   Notify["OpenMRS-13"] ->
-	Exec ['reload-udev-rules']->
+    Exec ['reload-udev-rules']->
   Notify["OpenMRS-14"] ->
-	Exec ['disable-mysql-startup']
+    Exec ['disable-mysql-startup']
 
   
   notify {"OpenMRS-1.0.0":
@@ -63,11 +63,11 @@ class openmrs{
 
   notify {"OpenMRS-1.1":
     message=> "Step 1. Download openmrs war from url and unzip to tomcat",
-  } 	
+  }   
   exec { 'download-openmrs':
     cwd     => '/usr/src',
     creates => '/usr/src/openmrs.war',
-    command => '/usr/bin/wget \'http://iweb.dl.sourceforge.net/project/openmrs/releases/OpenMRS_1.9.1/openmrs.war\'',
+    command => '/usr/bin/wget \'http://downloads.sourceforge.net/project/openmrs/releases/OpenMRS_1.9.3/openmrs.war\'',
     timeout => 5000,
   }
   
@@ -135,18 +135,18 @@ class openmrs{
   }
   exec{ 'openmrs-module-kenyaemr-git-checkout':
     cwd => '/usr/src/openmrs-module-kenyaemr',
-    command => "/usr/bin/git checkout 2013.1",
+    command => "/usr/bin/git checkout 13.2.2",
     logoutput => 'true',
   }
 
   notify {"OpenMRS-6":
-    message=> "Step 6 Run maven install to create distro.zip",
+    message=> "Step 6. Run maven install to create distro.zip",
   }
   exec{ "maven-install":
     cwd => '/usr/src/openmrs-module-kenyaemr',
     command => '/usr/bin/mvn clean install -DbuildDistro=true -DsetupDatabase=true', 
     logoutput => 'on_failure',
-    timeout => 5000, 	
+    timeout => 5000,  
   }
 
   notify {"OpenMRS-7":
@@ -154,15 +154,15 @@ class openmrs{
   }
   exec { "wget-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/wget \'https://www.dropbox.com/s/lnfvd9r7cblpawr/kenyaemr-concepts-2013.1.sql\'',
-    creates => '/usr/src/kenyaemr-concepts-2013.1.sql',
+    command => '/usr/bin/wget -qO- \'https://dl.dropboxusercontent.com/u/12136987/kenyaemr-concepts-2013.2.sql.zip\' | funzip > /usr/src/openmrs-concepts-13.2.sql',
+    creates => '/usr/src/openmrs-concepts-13.2.sql',
     timeout => 5000,
   }
 
   exec { "apply-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/mysql openmrs < kenyaemr-concepts-2013.1.sql',
-    timeout => 5000,	
+    command => '/usr/bin/mysql openmrs < /usr/src/openmrs-concepts-13.2.sql',
+    timeout => 5000,  
   }
 
   notify {"OpenMRS-8":
@@ -173,11 +173,11 @@ class openmrs{
     command => '/bin/rm -rf /usr/share/tomcat6/.OpenMRS/modules/*.*',
   }
   file { '/usr/share/tomcat6/.OpenMRS/modules' :
-		ensure => "directory",
-		group => 'tomcat6',
-		mode => '0775',
-		source => "/usr/src/openmrs-module-kenyaemr/distro/target/distro" ,
-		recurse => true
+    ensure => "directory",
+    group => 'tomcat6',
+    mode => '0775',
+    source => "/usr/src/openmrs-module-kenyaemr/distro/target/distro" ,
+    recurse => true
   }
 
   notify {"OpenMRS-9":
@@ -195,9 +195,7 @@ module.allow_web_admin=true
 connection.username=openmrs
 auto_update_database=false
 encryption.key=UA0+SGpR1BG7538EsklrZQ==
-connection.password=temp_openmrs
-
-',
+connection.password=temp_openmrs',
   }  
 
   notify {"OpenMRS-10":
@@ -232,7 +230,7 @@ connection.password=temp_openmrs
   }
   exec { 'reload-udev-rules':
     command => '/sbin/udevadm control --reload-rules',
-  }  
+  }
 
   notify {"OpenMRS-14":
     message=> "Disable mysql from startup",
