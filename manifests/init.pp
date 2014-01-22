@@ -146,7 +146,7 @@ class openmrs{
   }
   exec { "wget-concept-dictionary":
     cwd => '/usr/src',
-    command => '/usr/bin/wget -qO- \'https://www.dropbox.com/s/ito9bwk45rndv0t/openmrs_concepts_1.9.7_20140101.sql.zip\' | funzip > /usr/src/openmrs-concepts-13.3-RC4.sql',
+    command => '/usr/bin/wget -qO- \'https://www.dropbox.com/s/ito9bwk45rndv0t/openmrs_concepts_1.9.7_20140101.sql.zip\' | funzip > /usr/src/openmrs-concepts-13.3.sql',
     creates => '/usr/src/openmrs-concepts-13.3.sql',
     timeout => 5000,
   }
